@@ -1,0 +1,20 @@
+FUNCTION GetStdin$ (byte_count AS INTEGER)
+    DIM file AS INTEGER
+    DIM windir AS STRING
+    
+    file = FREEFILE
+    
+    'If windir is defined, this is a Windows OS
+    windir = ENVIRON$("WINDIR")
+    IF windir = "" THEN
+        'Unix like OS
+        OPEN "/dev/stdin" FOR INPUT AS file
+    ELSE
+        'Windows OS. Untested, probably won't work ;P
+        OPEN "CON" FOR INPUT AS file
+    END IF 
+    
+    GetStdin$ = INPUT$(byte_count, file)
+    
+   CLOSE file
+END FUNCTION

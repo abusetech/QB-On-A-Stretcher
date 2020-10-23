@@ -1,0 +1,113 @@
+'SUB GetCGIEnvironment (dict() AS DictElement)
+'    DIM i8 AS INTEGER
+'    DIM k8 AS STRING 
+'    DIM v8 AS STRING
+'    RESTORE lbl_CGI_environ_key_data
+'    FOR i8 = 0 TO UBOUND(dict)
+'        READ k8
+'        v8 = ENVIRON$(k8)
+'        ret = DictAppend(dict(), k8, v8)
+'    NEXT
+'END SUB
+
+FUNCTION ParseQueryString (query_string AS STRING, out_dict() AS DictElement)
+    'topix=9343&key=value
+
+    DIM token_end AS INTEGER
+    DIM token_start AS INTEGER
+    DIM token AS STRING
+    
+    DIM key_out AS STRING
+    DIM val_out AS STRING
+    
+
+    token_start = 1
+    
+    DO
+        token_end = INSTR(token_start, query_string, "&")
+        IF token_end = 0 THEN
+            'token not found -- use the remainder of the string as the key
+            token = RIGHT$(query_string, len(query_string) - token_start + 1)
+        ELSE
+            'token found
+            token = MID$(query_string, token_start, token_end - token_start)
+        END IF
+        
+        CALL ParseKVPair(token, key_out, val_out, "=")
+        'TODO: check for nonprinting characters
+        key_out = URLDecodeString(key_out)
+        val_out = URLDecodeString(val_out)
+        ret% = DictAppend(out_dict(), key_out, val_out)
+        
+        token_start = token_end + 1
+        ParseQueryString = ParseQueryString + 1
+        
+    LOOP WHILE token_end > 0
+
+    
+
+END SUB
+
+
+
+'Takes in a key=value pair and separates it into two strings
+'sets key_out and val_out to the key and value respectively
+'returns only a key if separator$ was not found
+SUB ParseKVPair (token$, key_out$, val_out$, seperator$)
+
+    DIM split AS INTEGER
+    
+    key_out$ = ""
+    val_out$ = ""
+    split = INSTR(token$, seperator$)
+    IF split = 0 THEN
+        key_out$ = token$
+        EXIT SUB
+    END IF
+    key_out$ = LEFT$(token$, split-1)
+    val_out$ = RIGHT$(token$, LEN(token$) - split)
+END SUB
+
+SUB SetDefaultHeaders()
+    ret% = DictAppend(response_header_dict(), "Content-Type", "text/html; charset=us-ascii")
+    'DictAppend(dict(), ""
+END SUB
+
+'Sets a response header
+FUNCTION SetHeader(k AS STRING, v AS STRING)
+    SetHeader = DictAppend(response_header_dict(), k, v)
+END FUNCTION
+
+'Sends the headers contained in the given dictionary
+SUB SendHeaders()
+    'Iterate over dict until the upper bound of dict is reached
+    'or a blank key is reached
+    FOR i = LBOUND(response_header_dict) TO UBOUND(response_header_dict)
+        IF response_header_dict(i).k <> "" THEN
+            PRINT response_header_dict(i).k + ": ";
+            PRINT response_header_dict(i).v
+        ELSE
+            EXIT FOR
+        END IF
+    NEXT
+    'Blank line to indicate end of headers
+    PRINT ""
+    
+END SUB
+
+FUNCTION CGIRoute(match AS STRING)
+    'First, try to match as normal
+    IF WildcardMatch(ENVIRON$("PATH_INFO"), match) THEN
+        CGIRoute = -1
+        EXIT FUNCTION
+    END IF
+    
+    'Then try adding or removing a trailing slash
+    IF ASC(match, LEN(match)) = ASC("/") THEN
+        'Try without trailing slash
+        CGIRoute = WildcardMatch(ENVIRON$("PATH_INFO"), LEFT$(match, LEN(match)-1))
+    ELSE
+        CGIRoute = WildcardMatch(ENVIRON$("PATH_INFO"), match + "/")
+    ENDIF
+    
+END FUNCTION

@@ -1,0 +1,109 @@
+'
+'dict.bas
+'Simple dictionary implementation
+'
+'Ex.
+'DIM array_name(len-1) AS DictElement
+'DIM dm AS DictMeta
+'dm.maxsize = len
+'DictAppend(array_name, dm, "test key", "test val")
+
+'DIM new_dict(10) AS DictElement
+'DIM dm AS DictMeta
+'dm.length = 10
+'ret = DictAppend(new_dict(), dm, "test", "val")
+'ret = DictAppend(new_dict(), dm, "test2", "val2")
+'id& = DictIndex(new_dict(), dm, "test")
+'PRINT STR$(id)
+
+
+TYPE DictElement
+    k AS STRING
+    v AS STRING
+END TYPE
+
+
+'
+'DictLookup
+'Finds the index of a key in an array of DictElement
+'Returns -1 on failure, or the index of the element on success
+'
+FUNCTION DictIndex& (dict() AS DictElement, k AS STRING)
+    DIM dk AS STRING
+    DIM i AS INTEGER
+    'Linear search, very fast :P
+    FOR i = LBOUND(dict) TO UBOUND(dict)
+        dk = dict(i).k
+        IF dk = k THEN
+            DictIndex& = i
+            EXIT FUNCTION
+        ELSEIF dk = "" THEN
+            DictIndex& = -1
+            EXIT FUNCTION
+        END IF
+    NEXT
+    
+    DictIndex& = -1
+END FUNCTION
+
+'
+'DictValue
+'Returns a string value from a dictionary given a key on success
+'Returns an empty string on failure
+'
+FUNCTION DictValue$ (dict() AS DictElement, k AS STRING)
+    DIM index AS INTEGER
+    index = DictIndex(dict(), k)
+    'PRINT "DICT INDEX:" + STR$(index&)
+    IF index >= 0 THEN
+        DictValue$ = dict(index).v$
+    ELSE
+        DictValue$ = ""
+    END IF
+END FUNCTION
+
+'
+'DictAppend
+'Appends a DictElement to an existing dictionary
+'Returns 0 on success and -1 on failure
+'If the key exists, this function sets the value mapped to that key
+'
+FUNCTION DictAppend (dict() AS DictElement, k AS STRING, v AS STRING)
+
+    DIM free_index AS INTEGER
+    
+    IF DictIndex(dict(), k) >= 0 THEN
+        'Key exists, set the value instead
+        free_index = DictIndex(dict(), k)
+        dict(free_index).v = v
+        DictAppend = 0
+        EXIT FUNCTION
+    END IF
+    
+    free_index = DictFreeIndex(dict())
+    
+    IF free_index >= 0 THEN
+        dict(free_index).k$ = k$
+        dict(free_index).v$ = v$
+    ELSE
+        DictAppend = -1
+        EXIT FUNCTION
+    END IF
+    
+    DictAppend = 0
+    
+END FUNCTION
+
+
+FUNCTION DictFreeIndex (dict() AS DictElement)
+'Linear search for now
+    FOR i =  LBOUND(dict) TO UBOUND(dict)
+        IF dict(i).k = "" THEN
+            DictFreeIndex = i
+            EXIT FUNCTION
+        END IF
+    NEXT
+    
+    DictFreeIndex = - 1
+END FUNCTION
+

@@ -1,0 +1,6 @@
+'$INCLUDE: 'dict.bm'
+'$INCLUDE: 'string.bm'
+'$INCLUDE: 'encoding.bm'
+'$INCLUDE: 'environ.bm'
+'$INCLUDE: 'stdin.bm'
+'$INCLUDE: 'templater.bm'

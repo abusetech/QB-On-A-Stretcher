@@ -1,0 +1,174 @@
+'Returns -1 if any character in in_chars is found in in_str
+
+'else, returns 0
+FUNCTION ContainsChar% (in_str AS STRING, in_chars AS STRING)
+    DIM ch_i AS INTEGER
+    DIM str_i AS INTEGER
+    ContainsChar% = 0
+    FOR ch_i = 1 TO LEN(in_chars) 
+        'PRINT CHR$(ASC(in_chars$, ch_i%));
+        FOR str_i = 1 TO LEN(in_str) 
+            'PRINT CHR$(ASC(in_str$, str_i%));
+            IF ASC(in_chars, ch_i) = ASC(in_str, str_i) THEN
+                ContainsChar% = -1
+                EXIT FUNCTION
+            END IF
+        NEXT
+    NEXT
+END FUNCTION
+
+SUB StringReplace(text AS STRING, old AS STRING, new AS STRING)
+    DIM inst AS INTEGER
+    DIM left_side AS STRING
+    DIM right_side AS STRING
+    inst = 0
+    DO
+        inst = INSTR(inst + 1, text, old)
+        IF inst > 0 THEN
+            left_side = LEFT$(text, inst - 1)
+            right_side = RIGHT$(text, LEN(text) - inst - LEN(old) + 1)
+            text = left_side + new + right_side
+        END IF
+    LOOP WHILE inst
+END SUB
+
+FUNCTION CountSubstrings (text AS STRING, separator AS STRING)
+    DIM locs AS INTEGER
+    locs = -1
+    DO
+        locs = INSTR(locs + 1, text, separator)
+        IF locs THEN
+            CountSubstrings = CountSubstrings + 1
+        END IF
+    LOOP UNTIL locs = 0
+END FUNCTION
+
+
+'
+'Returns TRUE if the strings are equal
+'
+FUNCTION StringCompare(s1 AS STRING, s2 AS STRING)
+    StringCompare = 0
+    IF LEN(s1) <> LEN(s2) THEN
+        EXIT FUNCTION
+    END IF
+    FOR i = 1 TO LEN(s1) - 1
+        IF ASC(s1, i) <> ASC(s2, i) THEN
+            EXIT FUNCTION
+        END IF
+    NEXT
+    StringCompare = -1
+END FUNCTION
+
+'
+'Returns TRUE if text begins with search
+'
+FUNCTION StringStartsWith(text AS STRING, search AS STRING)
+    IF LEN(search) > LEN(text) THEN
+        EXIT FUNCTION
+    END IF
+    IF StringCompare(LEFT$(text, LEN(search)), search) THEN
+        StringStartsWith = -1
+    END IF
+END FUNCTION
+
+'
+'Returns TRUE if text ends with search
+'
+FUNCTION StringEndsWith(text AS STRING, search AS STRING)
+    IF LEN(search) > LEN(text) THEN
+        EXIT FUNCTION
+    END IF
+    IF RIGHT$(text, LEN(search)) = search THEN
+        StringEndsWith = -1
+    END IF
+END FUNCTION
+
+'Returns TRUE if the string may be interpreted as a completely numeric
+'integer, ie. only contains the characters [0-9]
+FUNCTION StringIsInteger(text AS STRING)
+    DIM char as INTEGER
+    FOR i = 1 TO LEN(text)
+        char = ASC(text, i) 
+        IF char > 57 OR char < 48 THEN
+            StringIsInteger = 0
+            EXIT FUNCTION
+        END IF
+    NEXT
+    StringIsInteger = -1
+END FUNCTION
+
+
+'finds search in text where search can contain wildcards (*)
+'returns -1 (True) if the text matches
+'0 (False) otherwise
+'Search strings containing multiple consecutive wildcards are considered invalid
+FUNCTION WildcardMatch (text AS STRING, search AS STRING)
+    DIM text_cursor AS INTEGER
+    
+    DIM search_start AS INTEGER
+    DIM search_end AS INTEGER
+    DIM search_token AS STRING
+    DIM search_end_flag AS INTEGER
+    
+    search_start = 1
+    search_end_flag = -1
+    
+    'A lone wild card ALWAYS matches anything
+    IF ASC(search,1) = ASC("*")  AND LEN(search) = 1 THEN
+        WildcardMatch = -1
+        EXIT FUNCTION
+    END IF
+    
+    'If the search start is NOT a wild card, make sure the search string matches
+    'The left side of the string exactly
+    IF ASC(search,1) <> ASC("*") THEN
+        search_end = INSTR(search_start, search, "*")
+        IF search_end = 0 THEN
+            search_end = LEN(search) 
+        END IF
+        IF StringCompare(LEFT$(text, search_end -1 ), LEFT$(search, search_end - 1)) = 0 THEN
+            EXIT FUNCTION
+        END IF
+    ELSE
+        'If the first character is a wildcard, start to the right of the wildcard
+        search_start = 2
+    END IF
+    
+    DO 
+        'find the next SEARCH token
+        search_end = INSTR(search_start, search, "*")
+        IF search_end <= 0 THEN
+            'We've reached the end of the search string
+            search_end = LEN(search) + 1
+            search_end_flag = 0
+        END IF
+        'Cut the token out of the string
+        search_token = MID$(search, search_start, search_end - search_start)
+  
+        
+        text_cursor = INSTR(text_cursor, text, search_token)
+        'If text_cursor is zero, then the search failed, we can safely exit from here.
+        IF text_cursor = 0 THEN
+            WildcardMatch = 0
+            EXIT FUNCTION
+        END IF
+        
+        search_start = search_end + 1
+        
+    LOOP WHILE search_end_flag
+    
+    'Check if the last character in the search string is a wild card.
+    'If not the last string needs to be an exact match.
+    IF ASC(search, LEN(search)) = ASC("*") THEN
+        'Matches. Return TRUE.
+        WildcardMatch = -1
+    ELSE
+        IF search_token = RIGHT$(text, LEN(search_token)) THEN
+            WildcardMatch = -1
+        END IF
+    END IF
+    
+    
+    
+END FUNCTION

@@ -1,0 +1,65 @@
+'
+'Reads in a template one line at a time while searching for template variables of
+'the form {{variable}} these variables refer to key names in the provided 
+'dictionary. HTML special characters are escaped by default, prepend a tilde "~"
+'to the variable name to disable automatic escaping ie. {{~variable}}
+'
+'Reading one line at a time is necessary so that QB doesn't run out of memory
+'since it can only use 64K of conventional memory
+SUB RenderTemplateInline(template_file_name AS STRING, dict () AS DictElement)
+    
+    DIM template_file_num AS INTEGER
+    DIM var_start AS INTEGER
+    DIM var_end AS INTEGER
+    DIM template_line AS STRING
+    DIM variable_name AS STRING
+    DIM page_variable AS STRING
+    template_file_num = FREEFILE
+    
+    OPEN template_file_name FOR INPUT AS #template_file_num
+    
+    DO
+        'Read a line from the template
+        LINE INPUT #template_file_num, template_line
+        DO
+            'find any variables
+            var_start = INSTR(var_start, template_line,"{{")
+            var_end = INSTR(var_start, template_line, "}}")
+             
+             IF var_start > 0 and var_end > 0 THEN
+                 'print text up to the variable
+                 PRINT LEFT$(template_line, var_start - 1);
+                 'print the variable
+                 variable_name = MID$(template_line, var_start + 2, var_end - var_start - 2)
+                 variable_name = LTRIM$(RTRIM$(variable_name))
+                 'IF the variable begins with ~, don't escape special characters (<,>, etc..)
+                 IF StringStartsWith(variable_name, "~") THEN
+                     'print "var_name_tilde: " + variable_name
+                     'print "page_var_name: " + MID$(variable_name, 2, LEN(variable_name) - 1)
+                     page_variable = DictValue(dict(), MID$(variable_name, 2, LEN(variable_name) - 1))
+                     'print "page_var:" + page_variable
+
+                 ELSE
+                     'print "var_name: " + variable_name
+                     page_variable = DictValue(dict(), variable_name)
+                     HTMLEscape(page_variable)
+                 END IF
+                 PRINT page_variable;
+                 'curtail the line to the end of the variable
+                 template_line = RIGHT$(template_line, LEN(template_line) - var_end - 1)
+             ELSE
+                 'no variables found, print the remainder of the text
+                 PRINT template_line
+             END IF
+            
+            var_start = var_end
+        LOOP WHILE var_start > 0 AND var_end > 0
+        
+    LOOP WHILE NOT EOF(template_file_num)
+    
+    CLOSE template_file_num
+    
+END SUB
+
+
+

@@ -1,0 +1,103 @@
+
+'
+' Decodes %xx notation to a 'real' string
+'
+FUNCTION URLDecodeString$(url AS STRING)
+    
+    DIM hex_chars AS STRING
+    DIM state AS INTEGER
+    DIM current_char AS INTEGER
+    DIM encoded_char_val AS INTEGER
+    DIM to_decode  AS STRING
+    
+    hex_chars = "abcdefABCDEF0123456789"
+    state = 1
+    
+    'State one - no % characters received
+    'State two - one % received
+    'State three one % received followed by one valid hex character
+    
+    FOR i = 1 TO LEN(url) 
+        current_char = ASC(url, i)
+        IF state = 1 THEN
+            IF current_char <> ASC("%") THEN
+                URLDecodeString$ = URLDecodeString$ + CHR$(current_char)
+            ELSE
+                state = 2
+            END IF
+        ELSEIF state = 2 THEN
+            IF current_char = ASC("%") THEN
+                URLDecodeString$ = URLDecodeString$ + "%"
+                state = 1
+            ELSEIF ContainsChar(hex_chars, CHR$(current_char)) THEN
+                'Valid hexdecimal digit
+                to_decode = to_decode + CHR$(current_char)
+                state = 3
+            ELSE
+                'Not hex, invalid.
+                URLDecodeString$ = URLDecodeString$ + "%" + CHR$(current_char)
+                state = 1
+            END IF
+        ELSEIF state = 3 THEN
+            IF ContainsChar(hex_chars, CHR$(current_char)) THEN
+                to_decode = to_decode + CHR$(current_char)
+                'DECODE
+                'Disallow non printing chars
+                encoded_char_val = VAL("&H" + to_decode)
+                IF encoded_char_val > 31 AND encoded_char_val < 127 THEN
+                    'Append the decoded character to the string
+                    URLDecodeString$ = URLDecodeString$ + CHR$(encoded_char_val)
+                END IF
+                to_decode = ""
+                state = 1
+            ELSEIF current_char = ASC("%") THEN
+                'Invalid hex
+                URLDecodeString$ = URLDecodeString$ + to_decode + "%"
+                to_decode = ""
+                state = 2
+            ELSE
+                'Invalid hex 
+                URLDecodeString$ = URLDecodeString$ + to_decode
+                URLDecodeString$ = URLDecodeString$ + CHR$(current_char)
+                to_decode = ""
+                state = 1
+            END IF
+        END IF
+        
+    NEXT
+    
+    
+END FUNCTION
+
+'
+' Encodes a string (Not a whole URL!) using percent encoding defined in RFC3986 with
+' a defined set of allowed characters
+'
+FUNCTION URLEncodeString$(url$)
+    allowed_chars$ = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
+    FOR i& = 1 TO LEN(url$) 
+        IF ContainsChar(CHR$(ASC(url$, i&)), allowed_chars$) THEN
+            URLEncodeString$ = URLEncodeString$ + CHR$(ASC(url$, i&))
+        ELSE
+            URLEncodeString$ = URLEncodeString$ + URLEncodeChars(CHR$(ASC(url$, i&)))
+        END IF
+    NEXT
+END FUNCTION
+
+
+'
+' Encodes a string using %xx notation (RFC3986)
+'
+FUNCTION URLEncodeChars$(char$)
+    FOR i% = 1 TO LEN(char$)
+        URLEncodeChars$ = URLEncodeChars$ + "%" + HEX$(ASC(char$, i%))
+    NEXT
+END FUNCTION
+
+SUB HTMLEscape(text AS STRING)
+    CALL StringReplace(text, "&", "&amp;")
+    CALL StringReplace(text, ">", "&gt;")
+    CALL StringReplace(text, "<", "&lt;")
+    CALL StringReplace(text, CHR$(34), "&quot;")
+    CALL StringReplace(text, CHR$(39), "&#39;")
+END SUB
