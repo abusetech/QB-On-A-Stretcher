@@ -33,5 +33,5 @@ Documentation is as of yet unwritten, but the comments in the library (*.bm) fil
 * templater.bm contains one function for substituting variables into an HTML template
 
 ## Examples
-See example_html.bas for a CGI example. If you want to try this example using a real web server, you will need to change `TEMPLATE_DIR` to the absolute path to the example_templates directory.
+See example_html.bas for a CGI example. If you want to try this example using a real web server, you will need to change `TEMPLATE_DIR` to the absolute path to the example_templates directory and copy the executable created from example_html.bas to the cgi-bin directory of your web server.
 
