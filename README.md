@@ -9,10 +9,12 @@ Copy the files into your project directory.
 
 Add the following lines to the beginning of your program:
 
-`$SCREENHIDE`
-`$CONSOLE`
-`_DEST _CONSOLE`
-`'$INCLUDE: 'qbonas.bi'`
+```
+$SCREENHIDE
+$CONSOLE
+_DEST _CONSOLE
+'$INCLUDE: 'qbonas.bi'
+```
 
 Add the following line after your main program code, but before any FUNCTIONS or SUBS in your program:
 
