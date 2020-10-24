@@ -2,7 +2,7 @@
 A barely serviceable RESTful web application framework for a language that probably shouldn't be on the web
 
 ## Limitations
-This framework is still very much a work in progress. It is likely to be buggy, broken and unreliable. The handling of POST requests is currently untested under Linux and not possible under Windows. Currently, there is no built-in way of reading data from stdin on Windows in QB64, which makes handling POST requests impossible on these operating systems without an external library.
+This framework is still very much a work in progress. It is likely to be buggy, broken and unreliable. The handling of POST requests is currently untested under Linux and currently not possible under Windows. Currently, there is no built-in way of reading data from stdin on Windows in QB64, which makes handling POST requests impossible on these operating systems without an external library.
 
 ## Usage
 Copy the files into your project directory.
