@@ -19,8 +19,6 @@ DIM dict_ret AS INTEGER
 'skip special character replacement.
 CONST TEMPLATE_DIR = "./example_templates/"
 
-'TODO: Move to environ.bi
-
 
 'Get the page title from query string, ie <url>/?title=page%20title
 dict_ret = DictAppend(page_variables(), "title", DictValue(cgi_query_dict(), "title"))
