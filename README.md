@@ -1,10 +1,28 @@
 # QB-on-a-Stretcher
-A barely serviceable RESTful web application framework for a language that probably shouldn't be on the web
+A RESTful web application framework written in a language that long predates the web
+
+
+## About
+
+I started this project as a programming challenge to create a web application framework from the ground up in a vintage programming language. This project was created in a similar vein to [COBOL-on-wheelchair](https://github.com/azac/cobol-on-wheelchair), which is itself a humorous take on [Ruby on Rails.](https://rubyonrails.org/). It isn't *really* intended to be used in production and exists more as a demonstration of what is possible in a QBasic compatible language. Despite this, it is shockingly performant and retains much of the core functionality of a RESTful web application framework.
+
+This project is built using [QB64](https://qb64.com/), a language that aims to be QBasic compatible while running on modern operating systems. It is designed to produce binaries that can be run as (CGI)[https://httpd.apache.org/docs/2.4/howto/cgi.html] applications.
+
+## Features
+
+* Easy to use templater that streams pages in line by line to avoid running out of conventional memory
+* RESTful page router with pattern matching
+* A map like object implementation and a collection of useful string manipulation functions
+* A small suite of unit tests, also written in QBasic!
 
 ## Limitations
-This framework is still very much a work in progress. It is likely to be buggy, broken and unreliable. The handling of POST requests is currently untested under Linux and currently not possible under Windows. Currently, there is no built-in way of reading data from stdin on Windows in QB64, which makes handling POST requests impossible on these operating systems without an external library.
+
+As this project is written in a vintage programming language that predates a few important features now common in modern programming languages, this framework comes with a few limitations. Cheifly, the handling of POST requests is untested under Linux and currently not possible under Windows. Currently, there is no built-in way of reading data from stdin on Windows in QB64, which makes handling POST requests impossible on these operating systems without an external library.
+
+As QB64 is a modern implementation of QBasic that runs Clang under the hood, it would be possible to circumvent some of these limitations. However, doing so would require the use of language facilities that would make the code incompatible with the original QBasic and I feel that wouldn't be within the spirit of the project.
 
 ## Usage
+
 Copy the files into your project directory.
 
 Add the following lines to the beginning of your program:
