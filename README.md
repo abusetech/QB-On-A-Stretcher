@@ -4,9 +4,11 @@ A RESTful web application framework written in a language that long predates the
 
 ## About
 
-I started this project as a programming challenge to create a web application framework from the ground up in a vintage programming language. This project was created in a similar vein to [COBOL-on-wheelchair](https://github.com/azac/cobol-on-wheelchair), which is itself a humorous take on [Ruby on Rails.](https://rubyonrails.org/). It isn't *really* intended to be used in production and exists more as a demonstration of what is possible in a QBasic compatible language. Despite this, it is shockingly performant and retains much of the core functionality of a RESTful web application framework.
+I started this project as a programming challenge to create a web application framework from the ground up in a vintage programming language. This project was created in a similar vein to [COBOL-on-wheelchair](https://github.com/azac/cobol-on-wheelchair), which is itself a humorous take on [Ruby on Rails.](https://rubyonrails.org/)
 
-This project is built using [QB64](https://qb64.com/), a language that aims to be QBasic compatible while running on modern operating systems. It is designed to produce binaries that can be run as (CGI)[https://httpd.apache.org/docs/2.4/howto/cgi.html] applications.
+It isn't *really* intended to be used in production and exists more as a demonstration of what is possible in a QBasic compatible language. Despite this, it is shockingly performant and retains much of the core functionality of a RESTful web application framework.
+
+This project is built using [QB64](https://qb64.com/), a language that aims to be QBasic compatible while running on modern operating systems. It is designed to produce binaries that can be run as [CGI](https://httpd.apache.org/docs/2.4/howto/cgi.html) applications.
 
 ## Features
 
