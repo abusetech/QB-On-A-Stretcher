@@ -8,18 +8,18 @@ I started this project as a programming challenge to create a web application fr
 
 It isn't *really* intended to be used in production, and exists as something of a demonstration of what is possible in a QBasic-compatible language. Despite this, it is shockingly performant and retains much of the core functionality of a RESTful web application framework.
 
-This project is built using [QB64](https://qb64.com/), a language that aims to be QBasic compatible while running on modern operating systems. It is designed to produce binaries that can be run as [CGI](https://httpd.apache.org/docs/2.4/howto/cgi.html) applications.
+This project is built using [QB64](https://qb64.com/), a language that runs on modern operating systems while retaining QBasic compatibility. This library is intended to be used to produce binaries that can be run as [CGI](https://httpd.apache.org/docs/2.4/howto/cgi.html) applications.
 
 ## Features
 
-* Easy to use templater that streams pages in line by line to avoid running out of conventional memory
+* Easy to use templater that streams pages line by line to avoid running out of conventional memory
 * RESTful page router with pattern matching
 * A map like object implementation and a collection of useful string manipulation functions
 * A small suite of unit tests, also written in QBasic!
 
 ## Limitations
 
-As this project is written in a vintage programming language that predates a few important features now common in modern programming languages, this framework comes with a few limitations. Cheifly, the handling of POST requests is untested under Linux and currently not possible under Windows. Currently, there is no built-in way of reading data from stdin on Windows in QB64, which makes handling POST requests impossible on these operating systems without an external library.
+As this project is written in a vintage programming language that predates a few important features now common in modern programming languages, this framework comes with a few limitations. Cheifly, the handling of POST requests is untested under Linux and currently not possible under Windows. There is currently no built-in method of reading data from stdin on Windows in QB64, which makes handling POST requests impossible as CGI requires the standard i/o facilities to handle those requests.
 
 As QB64 is a modern implementation of QBasic that runs Clang under the hood, it would be possible to circumvent some of these limitations. However, doing so would require the use of language facilities that would make the code incompatible with the original QBasic and I feel that wouldn't be within the spirit of the project.
 
